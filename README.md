@@ -187,7 +187,9 @@ Si voleu fer NAT amb la WiFi:
     
 
 Pendent afegir el tema de les **/etc/udev/rules.d/70-persistent-net.rules** per compatibilitat amb diferents PCs.
-   sudo udevadm trigger --type=devices --action=add
+
+    sudo udevadm trigger --type=devices --action=add
+   
 
 Clients
 -------
