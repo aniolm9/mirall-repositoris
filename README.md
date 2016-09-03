@@ -1,7 +1,7 @@
 Servidor de miralls per a festes d'instal·lació
 ===============================================
 Revisió actualitzada del projecte de l'@alexm. Agraïments a l'@alexm i al @wagafo.
-*Pendent de confirmar tot el relatiu a les particions (LVM, particions separades, etc.).
+*Pendent de confirmar tot el relatiu a les particions (LVM, particions separades, etc.). Mirar també amb btrfs.
 
 Maquinari
 ---------
