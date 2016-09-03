@@ -1,0 +1,32 @@
+#!/bin/sh
+
+if [ $(whoami) != "apt-mirror" ]
+then
+    echo "$0: must be user apt-mirror" 1>&2
+    exit 1
+fi
+
+[ -z "$MIRRORS" ] && MIRRORS="/usr/local/etc/mirrors.conf"
+DISTS_ALIVE=$(egrep '^[a-z]+$' $MIRRORS)
+MIRROR="http://ftp.caliu.cat"
+WGET="wget -q -r -l 1"
+HOME="/var/spool/aptmirror"
+
+n=1
+for dist in ${DISTS_ALIVE}
+do
+    for dir in ${dist} ${dist}-updates ${dist}-security
+    do
+        cd "${HOME}/mirror"
+		${WGET} "${MIRROR}/ubuntu/dists/${dir}/main/dist-upgrader-all/current/"
+        if [ $? -eq 0 ]
+        then
+            echo "ok $n - $dir"
+        else
+            echo "ok $n # skip $dir may not exist yet"
+        fi
+        total=$n
+        n=`expr $n + 1`
+    done
+done
+echo 1..$total
