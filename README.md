@@ -8,7 +8,7 @@ Maquinari
 
 *   Un llapis USB o un CD amb l'instal·lador d'Ubuntu Server o de Debian, segons si el portàtil té unitat de CD.
 *   Un ordinador portàtil que pugui arrencar un disc dur del port USB i que tingui connexió WiFi.
-*   Un disc dur extern amb connexió USB (com a mínim de 500 GB) i preferiblement de 2.5" perquè no calgui carregar la font d'alimentació.
+*   Un disc dur extern amb connexió USB (es recomana 1TB) i preferiblement de 2.5" perquè no calgui carregar la font d'alimentació.
 *   Un cable USB per endollar el disc dur extern en un port USB del portàtil.
 *   Un cable de xarxa creuat o un de directe, si el portàtil és capaç de fer crossover automàticament (la majoria d'ordinadors moderns ja tenen aquesta característica).
 
