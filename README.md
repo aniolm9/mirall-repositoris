@@ -1,13 +1,12 @@
-# mirall-repositoris
-Revisió actualitzada del projecte de l'alexm. Agraïments a l'alexm i al wagafo.
-
 Servidor de miralls per a festes d'instal·lació
 ===============================================
+Revisió actualitzada del projecte de l'alexm. Agraïments a l'alexm i al wagafo.
+*Pendent de confirmar tot el relatiu a les particions (LVM, particions separades, etc.).
 
 Maquinari
 ---------
 
-*   Un llapis USB o un CD amb l'instal·lador d'Ubuntu Server, segons si el portàtil té unitat de CD.
+*   Un llapis USB o un CD amb l'instal·lador d'Ubuntu Server o de Debian, segons si el portàtil té unitat de CD.
 *   Un ordinador portàtil que pugui arrencar un disc dur del port USB i que tingui connexió WiFi.
 *   Un disc dur extern amb connexió USB (com a mínim de 500 GB) i preferiblement de 2.5" perquè no calgui carregar la font d'alimentació.
 *   Un cable USB per endollar el disc dur extern en un port USB del portàtil.
@@ -16,18 +15,20 @@ Maquinari
 Programari
 ----------
 
-*   Ubuntu Server
+*   Ubuntu Server o Debian
 *   lvm2
 *   dnsmasq
 *   iptables
 *   apt-mirror
 *   apache2
+*   wireless-tools
+*   wpasupplicant
 
 Instal·lació bàsica del servidor
 --------------------------------
 
 *   Endolleu el disc dur extern en un port USB del portàtil amb el cable USB.
-*   Arrenqueu el portàtil i feu que s'iniciï la instal·lació de l'Ubuntu Server des del llapis USB o del CD, segons s'escaigui.
+*   Arrenqueu el portàtil i feu que s'iniciï la instal·lació de l'Ubuntu Server o del Debian des del llapis USB o del CD, segons s'escaigui.
 *   Feu una instal·lació normal fins que arribeu a la selecció del disc.
 *   Trieu un particionat amb LVM sobre el disc dur extern que teniu endollat al port USB.
 *   La taula de particions del disc ha de contenir 2 particions primàries:
@@ -60,27 +61,19 @@ Serveis del servidor
 Configuració dels miralls
 -------------------------
 
-La configuració de xarxa suposa que la interfície **eth2** és la de cable i la **eth3** la WiFi.
+També es dóna per suposat que no hi ha instal·lat el NetworkManager o el Wicd (les instal·lacions sense entorn gràfic no els instal·len).
 
-Definiu les variables d'entorn per les interfícies de xarxa:
 
-    export LAN=eth2
-    export WAN=eth3
 
-Adapteu i copieu la configuració de les interfícies de xarxa:
-
-    sudo cp -b interfaces /etc/network/interfaces
-
-Instal·leu el paquet **dnsmasq**, adapteu i copieu la configuració a **/etc/dnsmasq.conf** (vegeu el paràmetre *no-dhcp-interface=eth2*):
-
-    sudo cp -b dnsmasq.conf /etc/dnsmasq.conf
-
-Instal·leu el paquet **apt-mirror** i executeu les ordres següents per preparar els miralls (utilitzarem el directori **/srv/mirror** que té muntat el volum pels miralls):
-
-    mv ~apt-mirror/* /srv/mirror/
-    rmdir ~apt-mirror
-    ln -sf ../../srv/mirror ~apt-mirror
+Instal·leu el paquet **apt-mirror** i executeu les ordres següents per preparar els miralls (utilitzarem el directori **/srv/mirror**):
+   
+    sudo mkdir -p /srv/mirror
+    sudo mv ~apt-mirror/* /srv/mirror/
+    sudo rm -r ~apt-mirror
+    sudo ln -s /srv/mirror ~apt-mirror
     cd ~apt-mirror/mirror
+    sudo mkdir -p ftp.caliu.cat/ubuntu
+    sudo mkdir -p changelogs.ubuntu.com
     sudo ln -s ftp.caliu.cat archive.ubuntu.com
     sudo ln -s archive.ubuntu.com es.archive.ubuntu.com
     sudo ln -s archive.ubuntu.com ad.archive.ubuntu.com
@@ -89,32 +82,29 @@ Instal·leu el paquet **apt-mirror** i executeu les ordres següents per prepara
 
 Instal·leu el paquet **apache2** i executeu les ordres següents per servir els mirralls:
 
+    sudo apt-get install apache2
     cd /var/www/html
-    sudo ln -s ../../spool/apt-mirror/mirror/changelogs.ubuntu.com changelogs
-    sudo ln -s ../../spool/apt-mirror/mirror/archive.ubuntu.com/ubuntu ubuntu
+    sudo ln -s /var/spool/apt-mirror/mirror/changelogs.ubuntu.com changelogs
+    sudo ln -s /var/spool/apt-mirror/mirror/archive.ubuntu.com/ubuntu ubuntu
 
 Copieu a */usr/local/bin* els guions que necessitareu més endavant:
 
-    sudo cp mirror-list mirror-upgrader mirror-changelogs mirror-nat /usr/local/bin
-    sudo chmod 0755 /usr/local/bin/mirror-*
+    sudo cp mirror-* /usr/local/bin
+    sudo chmod 755 /usr/local/bin/mirror-*
 
 Copieu a */usr/local/etc* la configuració de quines distribucions ha d'incloure el mirall:
 
     sudo cp mirrors.conf /usr/local/etc/mirrors.conf
-    sudo chmod 0644 /usr/local/etc/mirrors.conf
+    sudo chmod 644 /usr/local/etc/mirrors.conf
 
 Actualització dels miralls
 --------------------------
-
-Obtingueu una IP pel cable:
-
-    sudo dhclient $LAN
 
 Genereu la llista de fonts del mirall:
 
     /usr/local/bin/mirror-list | sudo tee /etc/apt/mirror.list
 
-Actualitzeu el mirall:
+Actualitzeu el mirall: (pendent de revisar, salta un error, almenys amb Debian).
 
     sudo su - apt-mirror -c apt-mirror
     sudo su - apt-mirror -c mirror-upgrader
@@ -136,6 +126,32 @@ Introducció de nous miralls
 
 Editeu l'ordre **mirror-list** i afegiu la nova distribució a la llista ***dists***.
 
+Configuració de la xarxa
+---------------------------
+
+La configuració de xarxa suposa que la interfície **eth0** és la de cable i la **wlan0** la WiFi.
+
+Definiu les variables d'entorn per les interfícies de xarxa:
+
+    export LAN=eth0
+    export WAN=wlan0
+
+Assegureu-vos de tenir instal·lat tant el **wireless-tools** com el **wpasupplicant**:
+
+    sudo apt-get install wireless-tools
+    sudo apt-get install wpasupplicant
+
+Adapteu i copieu la configuració de les interfícies de xarxa i reïniciu-les:
+
+    sudo cp -b interfaces /etc/network/interfaces
+    sudo /etc/init.d/networking restart
+
+Instal·leu el paquet **dnsmasq**, adapteu i copieu la configuració a **/etc/dnsmasq.conf**:
+
+    sudo apt-get install dnsmasq
+    sudo cp -b dnsmasq.conf /etc/dnsmasq.conf
+
+
 Preparació de la festa
 ======================
 
@@ -154,24 +170,23 @@ Servidor
 
 Definiu les interfícies de xarxa:
 
-    export LAN=eth2
-    export WAN=eth3
+    export LAN=eth0
+    export WAN=wlan0
 
-Poseu en marxa la interfície LAN:
-
-    sudo ip address add 10.0.0.10/8 dev $LAN
-
-Encengueu el dnsmasq:
+Engegueu el dnsmasq:
 
     sudo service dnsmasq restart
 
-Encengueu l'apache:
+Engegueu l'apache:
 
     sudo service apache2 restart
 
 Si voleu fer NAT amb la WiFi:
 
     sudo /usr/local/bin/mirror-nat
+    
+
+Pendent afegir el tema de les **/etc/udev/rules.d/70-persistent-net.rules** per compatibilitat amb diferents PCs.
 
 Clients
 -------
