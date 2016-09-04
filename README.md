@@ -124,7 +124,7 @@ Després d'una actualització o purga d'un mirall us pot interessar fer net:
 Introducció de nous miralls
 ---------------------------
 
-Editeu l'ordre **mirror-list** i afegiu la nova distribució a la llista ***dists***.
+Editeu el fitxer **mirrors.conf** i afegiu una nova línia amb la distribució.
 
 Configuració de la xarxa
 ---------------------------
