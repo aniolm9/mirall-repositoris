@@ -106,6 +106,8 @@ Genereu la llista de fonts del mirall:
 
 Actualitzeu el mirall: (pendent de revisar, salta un error, almenys amb Debian).
 
+    sudo chown -R apt-mirror:apt-mirror /srv/mirror
+    sudo chown -R apt-mirror:apt-mirror /var/spool/apt-mirror
     sudo su - apt-mirror -c apt-mirror
     sudo su - apt-mirror -c mirror-upgrader
     sudo su - apt-mirror -c mirror-changelogs
