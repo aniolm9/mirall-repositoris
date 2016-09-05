@@ -17,17 +17,18 @@ my %cfg = (
         multiverse
     )],
     'debian-installer' => {
-        ''        => [qw( main restricted universe multiverse )],
-        -updates  => [qw( main                                )],
-        -security => [qw(                                     )],
+        ''         => [qw( main restricted universe multiverse )],
+        -updates   => [qw( main restricted universe multiverse )],
+        -security  => [qw( main restricted universe multiverse )],
+        -backports => [qw( main restricted universe multiverse )],
     },
     'installer-arch' => {
-        ''        => [qw( main restricted universe multiverse )],
-        -updates  => [qw( main                                )],
-        -security => [qw(                                     )],
-        
+        ''         => [qw( main restricted universe multiverse )],
+        -updates   => [qw( main restricted universe multiverse )],
+        -security  => [qw( main restricted universe multiverse )],
+        -backports => [qw( main restricted universe multiverse )],
     },
-    'extra-dists' => [qw( -security -updates )],
+    'extra-dists' => [qw( -security -updates -backports )],
     uri => 'http://ftp.caliu.cat/ubuntu',
 );
 
@@ -85,4 +86,3 @@ set _tilde 0
 ############# end config ##############
 
 clean http://ftp.caliu.cat/ubuntu
-
