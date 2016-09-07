@@ -1,7 +1,7 @@
 Servidor de miralls per a festes d'instal·lació
 ===============================================
 Revisió actualitzada del projecte de l'@alexm. Agraïments a l'@alexm i al @wagafo.
-*Pendent de confirmar tot el relatiu a les particions (LVM, particions separades, etc.). Mirar també amb btrfs i mirar si el servidor Debian no falla amb els repositoris de l'Ubuntu.
+
 
 Maquinari
 ---------
@@ -15,8 +15,7 @@ Maquinari
 Programari
 ----------
 
-*   Ubuntu Server o Debian
-*   lvm2
+*   Debian o Ubuntu Server
 *   dnsmasq
 *   iptables
 *   apt-mirror
@@ -26,22 +25,71 @@ Programari
 
 Instal·lació bàsica del servidor
 --------------------------------
+Debian
 
-*   Endolleu el disc dur extern en un port USB del portàtil amb el cable USB.
-*   Arrenqueu el portàtil i feu que s'iniciï la instal·lació de l'Ubuntu Server o del Debian des del llapis USB o del CD, segons s'escaigui.
-*   Feu una instal·lació normal fins que arribeu a la selecció del disc.
-*   Trieu un particionat amb LVM sobre el disc dur extern que teniu endollat al port USB.
-*   La taula de particions del disc ha de contenir 2 particions primàries:
-    *   La primera de tipus **Linux** (83) per al **/boot** amb mida entre 250 MB.
-    *   La segona de tipus **Linux LVM** (8e) per al sistema amb la resta del disc.
-    *   La segona partició serà el volum físic d'un grup de volums anomenat **ubuntaires**, que conté aquests volums lògics:
-        *   **root** per al sistema, amb 8 GB.
-        *   **swap** per al fitxer d'intercanvi, amb 2 GB.
-        *   **mirror** per als miralls, amb la mida que calculeu que us cal (uns quants centenars de GB). Per exemple, podeu muntar-lo al directori **/srv/mirror** o qualsevol altre que us agradi més.
-    *   No assigneu tot l'espai disponible als miralls per si us cal ampliar algun dels altres volums lògics en algun moment.
-    *   Formateu la partició de **/boot** i els volums lògics amb el sistema de fitxers ext3 o ext4.
-*   Quan l'instal·lador us demani quin usuari voleu crear, indiqueu-li que es diu **ubuntaires** i la contrasenya **ubuntu.cat** (si us interessa que algú pugui connectar remotament a aquest ordinador, trieu una contrasenya més robusta).
-*   Quan l'instal·lador us demani quins serveis voleu instal·lar, indiqueu-li que cap (en concret, desactiveu el servei SSH si voleu que ningú pugui connectar remotament).
+*  Endolleu el disc dur extern en un port USB del portàtil amb el cable USB.
+*  Inicieu el sistema amb un *live CD*. En aquest cas utilitzo Lubuntu.
+*  Instal·leu les **btrfs-tools** i el **gparted**:
+
+   `sudo apt install btrfs-tools gparted`
+   
+*  Des del Gparted creeu 3 particions primàries: la primera d’uns 500MB amb format **ext2**, la segona d’uns 7GB amb tipus            **linux-swap** i la tercera amb l’espai que sobra i amb format **btrfs**.
+*  Creeu el directori /mnt/btrfs_partition i munteu-hi la partició btrfs:
+
+   ```
+   sudo mkdir /mnt/btrfs_partition
+	sudo mount /dev/sda2 /mnt/btrfs_partition
+	```
+	
+*  Creeu un subvolum pel sistema i un pels miralls (la nomenclatura està pensada per x64).
+
+   ```
+	cd /mnt/btrfs_partition
+	sudo btrfs subvolume create @64
+	sudo btrfs subvolume create @miralls
+	```
+	
+*  Creeu un directori per imatges del disc:
+
+	`sudo mkdir snapshots`
+	
+*  Per defecte el sistema arrel té l'ID=5, per tant si voleu veure els subvolums creats i els seus IDs feu:
+
+   `sudo btrfs subvolume list .`
+
+*  Com que voleu que l'instal·lador de Debian instal·li el sistema dins d'un subvolum feu:
+
+	`sudo btrfs subvolume set-default <ID> /mnt/btrfs_partition`
+	
+*  Reinicieu el PC i inicieu el CD de Debian.
+*  Feu una instal·lació normal fins que arribeu a la selecció del disc. Allà escolliu **Manual**.
+*  A la taula de particions han d’aparèixer les 3 particions creades anteriorment.
+   *  Seleccioneu la d’ext2, indiqueu el punt de muntatge **/boot** i habiliteu-la per l’arrancada.
+   *  Seleccioneu la btrfs, indiqueu que no es formati i escolliu el punt de muntatge **/**.
+   *  Comproveu que la tercera partició està marcada com a intercanvi.
+*  Quan l'instal·lador us demani quins serveis voleu instal·lar, indiqueu només les utilitats bàsiques.
+*  Instal·leu el GRUB, deixeu que acabi la instal·lació i reincieu per iniciar el sistema.
+*  Dins el fitxer **/etc/fstab** editeu la línia del / i afegiu la dels miralls (com a root):
+
+   ```
+   UUID=XXXXXX-YYYYYY / btrfs defaults,noatime,compress=lzo,subvol=@64 0 1
+   /dev/sda2 /srv/mirror btrfs defaults,noatime,compress=lzo,subvol=@miralls 0 2
+   ```
+   
+*  Restareu el volum per defecte (també com a root):
+
+   ```
+   mkdir /mnt/btrfsroot
+	mount -o subvolid=5 /dev/sda2 /mnt/btrfsroot
+	btrfs subvolume set-default 5 /mnt/btrfsroot
+	```
+	
+*  Actualitzeu el GRUB i reinicieu:
+
+   ```
+	update-grub2
+	reboot
+	```
 
 Serveis del servidor
 --------------------
