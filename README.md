@@ -76,35 +76,43 @@ Instal·lació bàsica del servidor
 *  Inicieu el sistema amb un *live CD*. En aquest cas utilitzo Lubuntu.
 *  Instal·leu les **btrfs-tools** i el **gparted**:
 
-   `sudo apt install btrfs-tools gparted`
+   ```
+   sudo apt install btrfs-tools gparted
+   ```
    
 *  Des del Gparted creeu 3 particions primàries: la primera d’uns 500MB amb format **ext2**, la segona d’uns 7GB amb tipus            **linux-swap** i la tercera amb l’espai que sobra i amb format **btrfs**.
 *  Creeu el directori /mnt/btrfs_partition i munteu-hi la partició btrfs:
 
    ```
    sudo mkdir /mnt/btrfs_partition
-	sudo mount /dev/sda2 /mnt/btrfs_partition
-	```
+   sudo mount /dev/sda2 /mnt/btrfs_partition
+   ```
 	
 *  Creeu un subvolum pel sistema i un pels miralls (la nomenclatura està pensada per x64).
 
    ```
-	cd /mnt/btrfs_partition
-	sudo btrfs subvolume create @64
-	sudo btrfs subvolume create @miralls
-	```
+   cd /mnt/btrfs_partition
+   sudo btrfs subvolume create @64
+   sudo btrfs subvolume create @miralls
+   ```
 	
 *  Creeu un directori per imatges del disc:
 
-	`sudo mkdir snapshots`
+   ```
+   sudo mkdir snapshots
+   ```
 	
 *  Per defecte el sistema arrel té l'ID=5, per tant si voleu veure els subvolums creats i els seus IDs feu:
 
-   `sudo btrfs subvolume list .`
+   ```
+   sudo btrfs subvolume list .
+   ```
 
 *  Com que voleu que l'instal·lador de Debian instal·li el sistema dins d'un subvolum feu:
 
-	`sudo btrfs subvolume set-default <ID> /mnt/btrfs_partition`
+   ```
+   sudo btrfs subvolume set-default <ID> /mnt/btrfs_partition
+   ```
 	
 *  Reinicieu el PC i inicieu el CD de Debian.
 *  Feu una instal·lació normal fins que arribeu a la selecció del disc. Allà escolliu **Manual**.
@@ -121,20 +129,20 @@ Instal·lació bàsica del servidor
    /dev/sda2 /srv/mirror btrfs defaults,noatime,compress=lzo,subvol=@miralls 0 2
    ```
    
-*  Restareu el volum per defecte (també com a root):
+*  Restareu el volum per defecte (com a root):
 
    ```
    mkdir /mnt/btrfsroot
-	mount -o subvolid=5 /dev/sda2 /mnt/btrfsroot
-	btrfs subvolume set-default 5 /mnt/btrfsroot
-	```
+   mount -o subvolid=5 /dev/sda2 /mnt/btrfsroot
+   btrfs subvolume set-default 5 /mnt/btrfsroot
+   ```
 	
-*  Actualitzeu el GRUB i reinicieu:
+*  Actualitzeu el GRUB i reinicieu (com a root):
 
    ```
-	update-grub2
-	reboot
-	```
+   update-grub2
+   reboot
+   ```
 
 Serveis del servidor
 --------------------
