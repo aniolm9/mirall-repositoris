@@ -25,7 +25,52 @@ Programari
 
 Instal·lació bàsica del servidor
 --------------------------------
-Debian
+
+### Ubuntu Server
+
+*  Endolleu el disc dur extern en un port USB del portàtil amb el cable USB. 
+*  Arrenqueu el portàtil i feu que s'iniciï la instal·lació de l'Ubuntu Server des del llapis USB o del CD, segons s'escaigui.
+*  Feu una instal·lació normal fins que arribeu a la selecció del disc.
+*  La taula de particions ha de contenir 3 particions primàries:
+   *  La primera de format ext2 per al /boot amb mida d’uns 500MB.
+   *  La segona de format btrfs per al sistema.
+   *  La terecera de tipus linux-swap per l’espai d’intercanvi amb mida d’uns 7GB.
+*  Quan l'instal·lador us demani quins serveis voleu instal·lar, indiqueu-li només les utilitats bàsiques del sistema.
+*  Instal·leu el GRUB, deixeu que acabi la instal·lació i reincieu per iniciar el sistema.
+
+*  Munteu la partició principal:
+   
+   ```
+   sudo mount /dev/sda2 /mnt
+   cd /mnt
+   ```
+
+*  Per defecte Ubuntu crea dos subvolums: l’arrel i el home. Com que no interessa tenir el home separat feu (la nomenclatura      està pensada per x64):
+
+   ```
+   sudo mv @home/* @/home
+   sudo btrfs sub delete @home
+   sudo mv @ @64
+   sudo btrfs sub create @miralls
+   sudo mkdir snapshots
+   ```
+
+*  Elimineu la línia que muntava @home a /etc/fstab, modifiqueu la línia que munta l’arrel i afegiu la línia del subvolum dels    miralls:
+   
+   ```
+   UUID=XXXXXX-YYYYYY / btrfs defaults,noatime,compress=lzo,subvol=@64 0 1
+   /dev/sda2 /srv/mirror btrfs defaults,noatime,compress=lzo,subvol=@miralls 0 2
+   ```
+
+*  Actualitzeu el GRUB i reinicieu:
+
+   ```
+   sudo update-grub2
+   sudo reboot
+   ```
+
+
+### Debian
 
 *  Endolleu el disc dur extern en un port USB del portàtil amb el cable USB.
 *  Inicieu el sistema amb un *live CD*. En aquest cas utilitzo Lubuntu.
