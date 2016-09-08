@@ -162,10 +162,6 @@ Serveis del servidor
 Configuració dels miralls
 -------------------------
 
-També es dóna per suposat que no hi ha instal·lat el NetworkManager o el Wicd (les instal·lacions sense entorn gràfic no els instal·len).
-
-
-
 Instal·leu el paquet **apt-mirror** i executeu les ordres següents per preparar els miralls (utilitzarem el directori **/srv/mirror**):
    
     sudo mkdir -p /srv/mirror
@@ -289,11 +285,14 @@ Si voleu fer NAT amb la WiFi:
     sudo /usr/local/bin/mirror-nat
     
 
-Pendent afegir el tema de les **/etc/udev/rules.d/70-persistent-net.rules** per compatibilitat amb diferents PCs.
+A vegades si connectes el disc dur extern a un altre ordinador no et detecta correctament les targetes de xarxa. Per arreglar-ho feu:
 
-    http://muzso.hu/2012/10/29/how-to-regenerate-the-etc-udev-rules.d-70-persistent-net.rules-file-on-debian-ubuntu
-    http://unix.stackexchange.com/questions/255715/how-to-regenerate-70-persistent-net-rules-without-reboot
-   
+    sudo udevadm trigger
+    sudo udevadm trigger --action=add
+    
+Si això no funciona elimineu el fitxer **/etc/udev/rules.d/70-persistent-net.rules**, reinicieu i després feu:
+
+    sudo udevadm trigger --action=change
 
 Clients
 -------
