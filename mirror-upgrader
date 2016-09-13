@@ -10,7 +10,7 @@ fi
 DISTS_ALIVE=$(egrep '^[a-z]+$' $MIRRORS)
 MIRROR="http://ftp.caliu.cat"
 WGET="wget -q -r -l 1"
-HOME="/var/spool/aptmirror"
+HOME="/var/spool/apt-mirror"
 
 n=1
 for dist in ${DISTS_ALIVE}
