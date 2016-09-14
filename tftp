@@ -1,0 +1,11 @@
+service tftp
+{
+        disable                 = no
+        socket_type             = dgram
+        wait                    = yes
+        user                    = root
+        server                  = /usr/sbin/in.tftpd
+        server_args             = -v -s /var/lib/tftpboot
+        only_from   = 172.31.0.240/28
+        interface   = 172.31.0.252
+}
