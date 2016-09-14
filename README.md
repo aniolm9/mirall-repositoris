@@ -266,11 +266,14 @@ Instal·leu el paquet **dnsmasq**, adapteu i copieu la configuració a **/etc/dn
 Arrancar per xarxa
 ---------------------------
 
+*Pendent servidor NTP.
+
 Instal·leu el **tftp**, el **xinetd** i el **pxelinux**:
 
     sudo apt-get install pxelinux tftpd-hpa tftp-hpa xinetd
 
 Baixeu el **netboot.tar.gz** apropiat:
+
 *Pendent. Falta mirar com modificar el pxelinux.cfg per fer multiboot.
 
 Habiliteu el servidor:
@@ -279,7 +282,7 @@ Habiliteu el servidor:
     sudo service xinetd restart
     sudo service tftpd-hpa stop
     sudo service xinetd restart
-    update-rc.d -f tftpd-hpa remove
+    sudo update-rc.d -f tftpd-hpa remove
 
 
 Preparació de la festa
@@ -299,11 +302,6 @@ Maquinari
 Servidor
 --------
 
-Definiu les interfícies de xarxa:
-
-    export LAN=eth0
-    export WAN=wlan0
-
 Engegueu el dnsmasq:
 
     sudo service dnsmasq restart
@@ -311,6 +309,10 @@ Engegueu el dnsmasq:
 Engegueu l'apache:
 
     sudo service apache2 restart
+
+Engegueu el tftp:
+
+    sudo service xinetd restart
 
 Si voleu fer NAT amb la WiFi:
 

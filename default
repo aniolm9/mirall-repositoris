@@ -1,0 +1,29 @@
+# D-I config version 2.0
+# search path for the c32 support libraries (libcom32, libutil etc.)
+menu hshift 13
+menu width 49
+menu margin 8
+
+menu title Installer boot menu
+include ubuntu-installer/amd64/boot-screens/stdmenu.cfg
+path ubuntu-installer/amd64/boot-screens/
+include ubuntu-installer/amd64/boot-screens/gtk.cfg
+default ubuntu-installer/amd64/boot-screens/vesamenu.c32
+
+label install
+        menu label ^Install 64-bits
+        menu default
+        kernel ubuntu-installer/amd64/linux
+        append vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet
+
+
+label install
+        menu label ^Install 32-bits
+        menu default
+        kernel ubuntu-installer/i386/linux
+        append vga=788 initrd=ubuntu-installer/i386/initrd.gz --- quiet
+
+
+prompt 0
+timeout 0
+
