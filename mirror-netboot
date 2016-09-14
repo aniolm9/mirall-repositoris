@@ -1,0 +1,12 @@
+#!/bin/sh
+[ -z "$MIRRORS" ] && MIRRORS="/home/aniol/Desktop/mirrors.conf"
+DISTS_ALIVE=$(egrep '^[a-z]+$' $MIRRORS)
+set -- $DISTS_ALIVE
+distro=$1
+
+wget "http://archive.ubuntu.com/ubuntu/dists/${distro}-updates/main/installer-amd64/current/images/netboot/netboot.tar.gz" -O "/tmp/netboot64.tar.gz"
+wget "http://archive.ubuntu.com/ubuntu/dists/${distro}-updates/main/installer-i386/current/images/netboot/netboot.tar.gz" -O "/tmp/netboot32.tar.gz"
+
+tar -xvzf "/tmp/netboot32.tar.gz" -C "/var/lib/tftpboot"
+tar -xvzf "/tmp/netboot64.tar.gz" -C "/var/lib/tftpboot"
+
