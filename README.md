@@ -12,6 +12,7 @@ Maquinari
 *   Un cable USB per endollar el disc dur extern en un port USB del portàtil.
 *   Un cable de xarxa creuat o un de directe, si el portàtil és capaç de fer crossover automàticament (la majoria d'ordinadors moderns ja tenen aquesta característica).
 
+
 Programari
 ----------
 
@@ -22,14 +23,21 @@ Programari
 *   apache2
 *   wireless-tools
 *   wpasupplicant
+*   pxelinux
+*   tftpd-hpa
+*   tftp-hpa
+*   xinetd
+
 
 Instal·lació bàsica del servidor
 --------------------------------
+
 
 ### Ubuntu Server
 
 *  Endolleu el disc dur extern en un port USB del portàtil amb el cable USB. 
 *  Arrenqueu el portàtil i feu que s'iniciï la instal·lació de l'Ubuntu Server des del llapis USB o del CD, segons s'escaigui.
+*  Escriviu el nom de màquina: **MirallUbuntaire** (s'utilitza al **dnsmasq.conf**).
 *  Feu una instal·lació normal fins que arribeu a la selecció del disc.
 *  La taula de particions ha de contenir 3 particions primàries:
    *  La primera de format ext2 per al /boot amb mida d’uns 500MB.
@@ -55,7 +63,7 @@ Instal·lació bàsica del servidor
    sudo mkdir snapshots
    ```
 
-*  Elimineu la línia que muntava @home a /etc/fstab, modifiqueu la línia que munta l’arrel i afegiu la línia del subvolum dels    miralls:
+*  Elimineu la línia que muntava @home a **/etc/fstab**, modifiqueu la línia que munta l’arrel i afegiu la línia del subvolum dels    miralls:
    
    ```
    UUID=XXXXXX-YYYYYY / btrfs defaults,noatime,compress=lzo,subvol=@64 0 1
@@ -115,6 +123,7 @@ Instal·lació bàsica del servidor
    ```
 	
 *  Reinicieu el PC i inicieu el CD de Debian.
+*  Escriviu el nom de màquina: **MirallUbuntaire** (s'utilitza al **dnsmasq.conf**).
 *  Feu una instal·lació normal fins que arribeu a la selecció del disc. Allà escolliu **Manual**.
 *  A la taula de particions han d’aparèixer les 3 particions creades anteriorment.
    *  Seleccioneu la d’ext2, indiqueu el punt de muntatge **/boot** i habiliteu-la per l’arrancada.
@@ -144,6 +153,7 @@ Instal·lació bàsica del servidor
    reboot
    ```
 
+
 Serveis del servidor
 --------------------
 
@@ -158,6 +168,9 @@ Serveis del servidor
     *   mirror-upgrader
     *   mirror-changelogs
 *   apache2
+*   tftp
+    *   tftp
+
 
 Configuració dels miralls
 -------------------------
@@ -186,13 +199,14 @@ Instal·leu el paquet **apache2** i executeu les ordres següents per servir els
 
 Copieu a */usr/local/bin* els guions que necessitareu més endavant:
 
-    sudo cp mirror-* /usr/local/bin
+    sudo cp mirall-repositoris/mirror-* /usr/local/bin
     sudo chmod 755 /usr/local/bin/mirror-*
 
 Copieu a */usr/local/etc* la configuració de quines distribucions ha d'incloure el mirall:
 
-    sudo cp mirrors.conf /usr/local/etc/mirrors.conf
+    sudo cp mirall-repositoris/mirrors.conf /usr/local/etc/mirrors.conf
     sudo chmod 644 /usr/local/etc/mirrors.conf
+
 
 Actualització dels miralls
 --------------------------
@@ -213,6 +227,7 @@ Si avorteu la sincronització del mirall i us cal esborrar el bloqueig, feu:
 
     sudo rm ~apt-mirror/var/apt-mirror.lock
 
+
 Neteja dels miralls obsolets
 ----------------------------
 
@@ -220,20 +235,17 @@ Després d'una actualització o purga d'un mirall us pot interessar fer net:
 
     sudo su - apt-mirror -c ~apt-mirror/var/clean.sh
 
+
 Introducció de nous miralls
 ---------------------------
 
 Editeu el fitxer **mirrors.conf** i afegiu una nova línia amb la distribució.
 
+
 Configuració de la xarxa
 ---------------------------
 
 La configuració de xarxa suposa que la interfície **eth0** és la de cable i la **wlan0** la WiFi.
-
-Definiu les variables d'entorn per les interfícies de xarxa:
-
-    export LAN=eth0
-    export WAN=wlan0
 
 Assegureu-vos de tenir instal·lat tant el **wireless-tools** com el **wpasupplicant**:
 
@@ -242,13 +254,32 @@ Assegureu-vos de tenir instal·lat tant el **wireless-tools** com el **wpasuppli
 
 Adapteu i copieu la configuració de les interfícies de xarxa i reïniciu-les:
 
-    sudo cp -b interfaces /etc/network/interfaces
+    sudo cp -b mirall-repositoris/interfaces /etc/network/interfaces
     sudo /etc/init.d/networking restart
 
 Instal·leu el paquet **dnsmasq**, adapteu i copieu la configuració a **/etc/dnsmasq.conf**:
 
     sudo apt-get install dnsmasq
-    sudo cp -b dnsmasq.conf /etc/dnsmasq.conf
+    sudo cp -b mirall-repositoris/dnsmasq.conf /etc/dnsmasq.conf
+
+
+Arrancar per xarxa
+---------------------------
+
+Instal·leu el **tftp**, el **xinetd** i el **pxelinux**:
+
+    sudo apt-get install pxelinux tftpd-hpa tftp-hpa xinetd
+
+Baixeu el **netboot.tar.gz** apropiat:
+*Pendent. Falta mirar com modificar el pxelinux.cfg per fer multiboot.
+
+Habiliteu el servidor:
+
+    sudo cp -b mirall-repositoris/tftp /etc/xinetd.d/tftp
+    sudo service xinetd restart
+    sudo service tftpd-hpa stop
+    sudo service xinetd restart
+    update-rc.d -f tftpd-hpa remove
 
 
 Preparació de la festa
@@ -263,6 +294,7 @@ Maquinari
 *   Un cable de xarxa creuat o un de directe, si el portàtil és capaç de fer crossover automàticament (la majoria d'ordinadors moderns ja tenen aquesta característica).
 *   Un commutador de xarxa amb ports suficients pel servidor i la resta d'ordinadors de la festa.
 *   Un cable directe per cada ordinador que faci de client a la festa.
+
 
 Servidor
 --------
@@ -293,6 +325,7 @@ A vegades si connectes el disc dur extern a un altre ordinador no et detecta cor
 Si això no funciona elimineu el fitxer **/etc/udev/rules.d/70-persistent-net.rules**, reinicieu i després feu:
 
     sudo udevadm trigger --action=change
+
 
 Clients
 -------
