@@ -239,7 +239,7 @@ Després d'una actualització o purga d'un mirall us pot interessar fer net:
 Introducció de nous miralls
 ---------------------------
 
-Editeu el fitxer **mirrors.conf** i afegiu una nova línia amb la distribució.
+Editeu el fitxer **mirrors.conf** i afegiu una nova línia amb la distribució. Atenció! La primera distribució de la llista també es baixarà com a NetBoot!
 
 
 Configuració de la xarxa
@@ -272,10 +272,12 @@ Instal·leu el **tftp**, el **xinetd** i el **pxelinux**:
 
     sudo apt-get install pxelinux tftpd-hpa tftp-hpa xinetd
 
-Baixeu el **netboot.tar.gz** apropiat:
+Creeu el directori **/var/lib/tftpboot** i baixeu els NetBoots:
 
-*Pendent. Falta mirar com modificar el pxelinux.cfg per fer multiboot.
-
+    sudo mkdir /var/lib/tftpboot
+    sudo mirror-netboot
+    sudo cp -b mirall-repositoris/default /var/lib/tftpboot/pxelinux.cfg/default
+    
 Habiliteu el servidor:
 
     sudo cp -b mirall-repositoris/tftp /etc/xinetd.d/tftp
