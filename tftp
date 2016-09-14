@@ -6,6 +6,6 @@ service tftp
         user                    = root
         server                  = /usr/sbin/in.tftpd
         server_args             = -v -s /var/lib/tftpboot
-        only_from   = 172.31.0.240/28
-        interface   = 172.31.0.252
+        only_from   = 10.0.0.0/8
+        interface   = 10.0.0.10
 }
