@@ -1,5 +1,5 @@
 #!/bin/sh
-[ -z "$MIRRORS" ] && MIRRORS="/home/aniol/Desktop/mirrors.conf"
+[ -z "$MIRRORS" ] && MIRRORS="/usr/local/etc/mirrors.conf"
 DISTS_ALIVE=$(egrep '^[a-z]+$' $MIRRORS)
 set -- $DISTS_ALIVE
 distro=$1
