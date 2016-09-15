@@ -266,8 +266,6 @@ Instal·leu el paquet **dnsmasq**, adapteu i copieu la configuració a **/etc/dn
 Arrancar per xarxa
 ---------------------------
 
-*Pendent servidor NTP.
-
 Instal·leu el **tftp**, el **xinetd** i el **pxelinux**:
 
     sudo apt-get install pxelinux tftpd-hpa tftp-hpa xinetd
