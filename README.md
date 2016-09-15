@@ -275,7 +275,8 @@ Instal·leu el **tftp**, el **xinetd** i el **pxelinux**:
 Creeu el directori **/var/lib/tftpboot** i baixeu els NetBoots:
 
     sudo mkdir /var/lib/tftpboot
-    sudo mirror-netboot
+    chmod +x mirall-repositoris/netboot-download
+    sudo mirall-repositoris/netboot-download
     sudo cp -b mirall-repositoris/default /var/lib/tftpboot/pxelinux.cfg/default
     
 Habiliteu el servidor:
@@ -303,6 +304,11 @@ Maquinari
 
 Servidor
 --------
+
+Exporteu les variables:
+    
+    export LAN=eth0
+    export WAN=wlan0
 
 Engegueu el dnsmasq:
 
@@ -336,7 +342,7 @@ Clients
 
 *   Desactiveu els repositoris de fonts (sources).
 *   Desactiveu els repositoris de tercers (canonical, medibuntu, etc.)
-*   Desactiveu els repositoris de backports i proposed.
+*   Desactiveu els repositoris de proposed.
 *   Activeu algun respositori de la llista següent:
     *   http://archive.ubuntu.com/ubuntu
     *   http://ad.archive.ubuntu.com/ubuntu
