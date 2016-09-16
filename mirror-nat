@@ -1,5 +1,8 @@
 #!/bin/sh
 
+#LAN=eth0
+#WAN=wlan0
+
 if [ -z "$LAN" ] || [ -z "$WAN" ]
 then
     echo "Usage: LAN=eth0 WAN=wlan0 $0" 1>&2
