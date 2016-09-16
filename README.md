@@ -303,11 +303,6 @@ Maquinari
 Servidor
 --------
 
-Exporteu les variables:
-    
-    export LAN=eth0
-    export WAN=wlan0
-
 Engegueu el dnsmasq:
 
     sudo service dnsmasq restart
@@ -320,9 +315,9 @@ Engegueu el tftp:
 
     sudo service xinetd restart
 
-Si voleu fer NAT amb la WiFi:
+Si voleu fer NAT amb la WiFi editeu i descomenteu les dues primeres variables del fitxer **/usr/local/bin/mirror-nat** i executeu-lo:
 
-    sudo /usr/local/bin/mirror-nat
+    sudo mirror-nat
     
 
 A vegades si connectes el disc dur extern a un altre ordinador no et detecta correctament les targetes de xarxa. Per arreglar-ho feu:
