@@ -18,13 +18,22 @@ do
     for dir in ${dist} ${dist}-updates ${dist}-security ${dist}-backports
     do
         cd "${HOME}/mirror"
-		    ${WGET} "${MIRROR}/ubuntu/dists/${dir}/main/dist-upgrader-all/current/"
+	${WGET} "${MIRROR}/ubuntu/dists/${dir}/main/dist-upgrader-all/current/"
         if [ $? -eq 0 ]
         then
             echo "ok $n - $dir"
-        else
-            echo "ok $n # skip $dir may not exist yet"
-        fi
+	else
+	    for repo in "main" "universe" "multiverse"
+	    do
+                ${WGET} "${MIRROR}/ubuntu/dists/${dir}/${repo}/dep11/"
+		if [ $? -eq 0 ]
+		then
+		    echo "ok $n - $dir"
+		else
+		    echo "ok $n # skip $dir may not exist yet"
+	        fi
+	    done
+	fi
         total=$n
         n=`expr $n + 1`
     done
