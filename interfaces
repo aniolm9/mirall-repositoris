@@ -2,6 +2,10 @@
 auto lo
 iface lo inet loopback
 
+# Interface to update mirrors.
+#auto eth0
+#iface eth0 inet dhcp
+
 # The LAN network interface.
 auto eth0
 iface eth0 inet static
