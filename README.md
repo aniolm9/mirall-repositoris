@@ -145,6 +145,12 @@ Configuració de la xarxa
 
 La configuració de xarxa suposa que la interfície **eth0** és la de cable i la **wlan0** la WiFi.
 
+Definiu les variables d'entorn per les interfícies de xarxa:
+
+    export LAN=eth0
+    export WAN=wlan0
+
+
 Assegureu-vos de tenir instal·lat tant el **wireless-tools** com el **wpasupplicant**:
 
     sudo apt-get install wireless-tools
