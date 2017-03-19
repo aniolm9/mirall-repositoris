@@ -262,7 +262,10 @@ Instal·leu el paquet **dnsmasq**, adapteu i copieu la configuració a **/etc/dn
     sudo apt-get install dnsmasq
     sudo cp -b mirall-repositoris/dnsmasq.conf /etc/dnsmasq.conf
 
-
+Quan vulguem actualitzar els miralls haurem d'agafar una IP del DHCP:
+```
+sudo dhclient $LAN
+```
 Arrancar per xarxa
 ---------------------------
 
@@ -302,6 +305,11 @@ Maquinari
 
 Servidor
 --------
+
+Poseu en marxa la interfície de LAN:
+```
+sudo ip address add 10.0.0.10/8 dev $LAN
+```
 
 Engegueu el dnsmasq:
 
