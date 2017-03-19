@@ -8,7 +8,7 @@ my %cfg = (
     deb => {
         i386    => 'deb',
         amd64   => 'deb-amd64',
-        #sources => 'deb-src',
+        sources => 'deb-src',
     },
     components => [qw(
         main
@@ -21,14 +21,16 @@ my %cfg = (
         -updates   => [qw( main restricted universe multiverse )],
         -security  => [qw( main restricted universe multiverse )],
         -backports => [qw( main restricted universe multiverse )],
+        -proposed  => [qw( main restricted universe multiverse )],
     },
     'installer-arch' => {
         ''         => [qw( main restricted universe multiverse )],
         -updates   => [qw( main restricted universe multiverse )],
         -security  => [qw( main restricted universe multiverse )],
         -backports => [qw( main restricted universe multiverse )],
+        -proposed  => [qw( main restricted universe multiverse )],
     },
-    'extra-dists' => [qw( -security -updates -backports )],
+    'extra-dists' => [qw( -security -updates -backports -proposed )],
     uri => 'http://ftp.caliu.cat/ubuntu',
 );
 

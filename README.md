@@ -16,7 +16,7 @@ Maquinari
 Programari
 ----------
 
-*   Debian o Ubuntu Server
+*   Ubuntu Server
 *   dnsmasq
 *   iptables
 *   apt-mirror
@@ -32,126 +32,21 @@ Programari
 Instal·lació bàsica del servidor
 --------------------------------
 
-
-### Ubuntu Server
-
-*  Endolleu el disc dur extern en un port USB del portàtil amb el cable USB. 
+*  Endolleu el disc dur extern en un port USB del portàtil amb el cable USB.
 *  Arrenqueu el portàtil i feu que s'iniciï la instal·lació de l'Ubuntu Server des del llapis USB o del CD, segons s'escaigui.
 *  Escriviu el nom de màquina: **MirallUbuntaire** (s'utilitza al **dnsmasq.conf**).
-*  Feu una instal·lació normal fins que arribeu a la selecció del disc.
-*  La taula de particions ha de contenir 3 particions primàries:
-   *  La primera de format ext2 per al /boot amb mida d’uns 500MB.
-   *  La segona de format btrfs per al sistema.
-   *  La terecera de tipus linux-swap per l’espai d’intercanvi amb mida d’uns 7GB.
+*  Quan l'instal·lador us demani quin usuari voleu crear, indiqueu-li que es diu **ubuntaires** i la contrasenya **ubuntu.cat** (si us interessa que algú pugui connectar remotament a aquest ordinador, trieu una contrasenya més robusta).
+*  Feu una instal·lació normal fins que arribeu a la selecció del disc. 
+*  La taula de particions del disc ha de contenir 2 particions primàries: 
+*  La primera de tipus **ext3** per al **/boot** amb mida entre 250 MB. 
+*  La segona de tipus **Linux LVM** per al sistema amb la resta del disc. 
+*  La segona partició serà el volum físic d'un grup de volums anomenat **ubuntaires**, que conté aquests volums lògics: 
+   *  **root** per al sistema, amb 20 GB. 
+   *  **swap** per al fitxer d'intercanvi, amb 6 GB. 
+   *  **mirror** per als miralls, amb la mida que calculeu que us cal (uns quants centenars de GB). Per exemple, podeu muntar-lo al directori **/srv/mirror** o qualsevol altre que us agradi més. 
+*  No assigneu tot l'espai disponible als miralls per si us cal ampliar algun dels altres volums lògics en algun moment. 
+*  Formateu la partició de **/boot** i els volums lògics amb el sistema de fitxers ext3 o ext4.
 *  Quan l'instal·lador us demani quins serveis voleu instal·lar, indiqueu-li només les utilitats bàsiques del sistema.
-*  Instal·leu el GRUB, deixeu que acabi la instal·lació i reincieu per iniciar el sistema.
-
-*  Munteu la partició principal:
-   
-   ```
-   sudo mount /dev/sda2 /mnt
-   cd /mnt
-   ```
-
-*  Per defecte Ubuntu crea dos subvolums: l’arrel i el home. Com que no interessa tenir el home separat feu (la nomenclatura      està pensada per x64):
-
-   ```
-   sudo mv @home/* @/home
-   sudo btrfs sub delete @home
-   sudo mv @ @64
-   sudo btrfs sub create @miralls
-   sudo mkdir snapshots
-   ```
-
-*  Elimineu la línia que muntava @home a **/etc/fstab**, modifiqueu la línia que munta l’arrel i afegiu la línia del subvolum dels    miralls:
-   
-   ```
-   UUID=XXXXXX-YYYYYY / btrfs defaults,noatime,compress=lzo,subvol=@64 0 1
-   /dev/sda2 /srv/mirror btrfs defaults,noatime,compress=lzo,subvol=@miralls 0 2
-   ```
-
-*  Actualitzeu el GRUB i reinicieu:
-
-   ```
-   sudo update-grub2
-   sudo reboot
-   ```
-
-
-### Debian
-
-*  Endolleu el disc dur extern en un port USB del portàtil amb el cable USB.
-*  Inicieu el sistema amb un *live CD*. En aquest cas utilitzo Lubuntu.
-*  Instal·leu les **btrfs-tools** i el **gparted**:
-
-   ```
-   sudo apt install btrfs-tools gparted
-   ```
-   
-*  Des del Gparted creeu 3 particions primàries: la primera d’uns 500MB amb format **ext2**, la segona d’uns 7GB amb tipus            **linux-swap** i la tercera amb l’espai que sobra i amb format **btrfs**.
-*  Creeu el directori /mnt/btrfs_partition i munteu-hi la partició btrfs:
-
-   ```
-   sudo mkdir /mnt/btrfs_partition
-   sudo mount /dev/sda2 /mnt/btrfs_partition
-   ```
-	
-*  Creeu un subvolum pel sistema i un pels miralls (la nomenclatura està pensada per x64).
-
-   ```
-   cd /mnt/btrfs_partition
-   sudo btrfs subvolume create @64
-   sudo btrfs subvolume create @miralls
-   ```
-	
-*  Creeu un directori per imatges del disc:
-
-   ```
-   sudo mkdir snapshots
-   ```
-	
-*  Per defecte el sistema arrel té l'ID=5, per tant si voleu veure els subvolums creats i els seus IDs feu:
-
-   ```
-   sudo btrfs subvolume list .
-   ```
-
-*  Com que voleu que l'instal·lador de Debian instal·li el sistema dins d'un subvolum feu:
-
-   ```
-   sudo btrfs subvolume set-default <ID> /mnt/btrfs_partition
-   ```
-	
-*  Reinicieu el PC i inicieu el CD de Debian.
-*  Escriviu el nom de màquina: **MirallUbuntaire** (s'utilitza al **dnsmasq.conf**).
-*  Feu una instal·lació normal fins que arribeu a la selecció del disc. Allà escolliu **Manual**.
-*  A la taula de particions han d’aparèixer les 3 particions creades anteriorment.
-   *  Seleccioneu la d’ext2, indiqueu el punt de muntatge **/boot** i habiliteu-la per l’arrancada.
-   *  Seleccioneu la btrfs, indiqueu que no es formati i escolliu el punt de muntatge **/**.
-   *  Comproveu que la tercera partició està marcada com a intercanvi.
-*  Quan l'instal·lador us demani quins serveis voleu instal·lar, indiqueu només les utilitats bàsiques.
-*  Instal·leu el GRUB, deixeu que acabi la instal·lació i reincieu per iniciar el sistema.
-*  Dins el fitxer **/etc/fstab** editeu la línia del / i afegiu la dels miralls (com a root):
-
-   ```
-   UUID=XXXXXX-YYYYYY / btrfs defaults,noatime,compress=lzo,subvol=@64 0 1
-   /dev/sda2 /srv/mirror btrfs defaults,noatime,compress=lzo,subvol=@miralls 0 2
-   ```
-   
-*  Restareu el volum per defecte (com a root):
-
-   ```
-   mkdir /mnt/btrfsroot
-   mount -o subvolid=5 /dev/sda2 /mnt/btrfsroot
-   btrfs subvolume set-default 5 /mnt/btrfsroot
-   ```
-	
-*  Actualitzeu el GRUB i reinicieu (com a root):
-
-   ```
-   update-grub2
-   reboot
-   ```
 
 
 Serveis del servidor
@@ -170,6 +65,9 @@ Serveis del servidor
 *   apache2
 *   tftp
     *   tftp
+*   pxelinux
+    *   default
+    *   netboot-download
 
 
 Configuració dels miralls
@@ -252,7 +150,7 @@ Assegureu-vos de tenir instal·lat tant el **wireless-tools** com el **wpasuppli
     sudo apt-get install wireless-tools
     sudo apt-get install wpasupplicant
 
-Adapteu i copieu la configuració de les interfícies de xarxa i reïniciu-les:
+Adapteu i copieu la configuració de les interfícies de xarxa i reiniciu-les:
 
     sudo cp -b mirall-repositoris/interfaces /etc/network/interfaces
     sudo /etc/init.d/networking restart
@@ -263,9 +161,9 @@ Instal·leu el paquet **dnsmasq**, adapteu i copieu la configuració a **/etc/dn
     sudo cp -b mirall-repositoris/dnsmasq.conf /etc/dnsmasq.conf
 
 Quan vulguem actualitzar els miralls haurem d'agafar una IP del DHCP:
-```
-sudo dhclient $LAN
-```
+
+    sudo dhclient $LAN
+
 Arrancar per xarxa
 ---------------------------
 
@@ -307,9 +205,8 @@ Servidor
 --------
 
 Poseu en marxa la interfície de LAN:
-```
-sudo ip address add 10.0.0.10/8 dev $LAN
-```
+
+    sudo ip address add 10.0.0.10/8 dev $LAN
 
 Engegueu el dnsmasq:
 
@@ -343,7 +240,6 @@ Clients
 
 *   Desactiveu els repositoris de fonts (sources).
 *   Desactiveu els repositoris de tercers (canonical, medibuntu, etc.)
-*   Desactiveu els repositoris de proposed.
 *   Activeu algun respositori de la llista següent:
     *   http://archive.ubuntu.com/ubuntu
     *   http://ad.archive.ubuntu.com/ubuntu
