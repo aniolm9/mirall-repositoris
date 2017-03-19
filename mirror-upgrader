@@ -9,7 +9,7 @@ fi
 [ -z "$MIRRORS" ] && MIRRORS="/usr/local/etc/mirrors.conf"
 DISTS_ALIVE=$(egrep '^[a-z]+$' $MIRRORS)
 MIRROR="http://ftp.caliu.cat"
-WGET="wget -q -r -l 1"
+WGET="wget -q -r -l 1 -R index.html"
 HOME="/var/spool/apt-mirror"
 
 n=1
