@@ -6,7 +6,8 @@ METARELEASE=meta-release
 METARELEASE_LTS=meta-release-lts
 SERVER=changelogs.ubuntu.com
 VAR=/var/spool/apt-mirror/var
-MIRROR=/var/spool/apt-mirror/mirror
+MIRROR=/var/spool/apt-mirror/mirror/changelogs.ubuntu.com
+WGET="wget -q"
 
 if [ $(whoami) != "apt-mirror" ]
 then
@@ -16,9 +17,4 @@ fi
 
 # mirror changelogs server home
 cd $MIRROR
-wget -t 0 -r -N -l 1 -o $VAR/$SERVER.log http://$SERVER/
-
-grep http $MIRROR/$SERVER/$METARELEASE | awk '{print $2}' > $VAR/$METARELEASE.urls
-grep http $MIRROR/$SERVER/$METARELEASE_LTS | awk '{print $2}' > $VAR/$METARELEASE_LTS.urls
-wget -t 0 -r -N -l 1 -o $VAR/$METARELEASE.log -i $VAR/$METARELEASE.urls
-wget -t 0 -r -N -l 1 -o $VAR/$METARELEASE_LTS.log -i $VAR/$METARELEASE_LTS.urls
+${WGET} ${SERVER}/${METARELEASE} && ${WGET} ${SERVER}/${METARELEASE_LTS}
