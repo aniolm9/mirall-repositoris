@@ -88,12 +88,15 @@ Instal·leu el paquet **apt-mirror** i executeu les ordres següents per prepara
     sudo ln -s archive.ubuntu.com us.archive.ubuntu.com
     sudo ln -s archive.ubuntu.com rsync.archive.ubuntu.com
 
-Instal·leu el paquet **apache2** i executeu les ordres següents per servir els mirralls:
+Instal·leu el paquet **apache2** i executeu les ordres següents per servir els mirralls (noteu el camp **ServerAdmin** del primer fitxer):
 
-    sudo apt-get install apache2
+    sudo cp mirall-repositoris/changelogs.conf /etc/apache2/sites-available
+    cd /etc/apache2/sites-available
+    sudo a2ensite changelogs.conf
     cd /var/www/html
     sudo ln -s /var/spool/apt-mirror/mirror/changelogs.ubuntu.com changelogs
     sudo ln -s /var/spool/apt-mirror/mirror/archive.ubuntu.com/ubuntu ubuntu
+    sudo service apache2 restart
 
 Copieu a */usr/local/bin* els guions que necessitareu més endavant:
 
